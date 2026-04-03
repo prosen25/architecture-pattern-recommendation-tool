@@ -49,11 +49,6 @@ with st.sidebar:
         st.session_state.interaction_log = []
         st.rerun()
 
-    st.subheader("Session Info")
-    st.write(f"Messages: {len(st.session_state.lc_messages)}")
-    st.write(f"Turns: {len(st.session_state.interaction_log)}")
-
-
 for message in st.session_state.lc_messages:
     role = "assistant" if isinstance(message, AIMessage) else "user"
     with st.chat_message(role):
