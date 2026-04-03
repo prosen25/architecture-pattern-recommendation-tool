@@ -47,6 +47,72 @@ assert os.path.exists(
 http_client = httpx.Client(verify=False)
 
 
+def classify_user_intent(user_text: str) -> str:
+    text = user_text.strip().lower()
+    if not text:
+        return "other"
+
+    greeting_patterns = [
+        r"^hi$",
+        r"^hello$",
+        r"^hey$",
+        r"^good morning$",
+        r"^good afternoon$",
+        r"^good evening$",
+        r"^how are you\??$",
+        r"^hi there$",
+        r"^hello there$",
+    ]
+    if any(re.match(pattern, text) for pattern in greeting_patterns):
+        return "greeting"
+
+    recommendation_keywords = [
+        "architecture",
+        "pattern",
+        "recommend",
+        "suggest",
+        "system design",
+        "design approach",
+        "solution design",
+    ]
+    if any(keyword in text for keyword in recommendation_keywords):
+        return "recommendation"
+
+    project_context_keywords = [
+        "we are building",
+        "building",
+        "project",
+        "platform",
+        "application",
+        "app",
+        "service",
+        "scalability",
+        "latency",
+        "team",
+        "compliance",
+        "requirements",
+    ]
+    if any(keyword in text for keyword in project_context_keywords):
+        return "recommendation"
+
+    return "other"
+
+
+def greeting_response() -> str:
+    return (
+        "Hello! I can help with architecture pattern recommendations.\n\n"
+        "Please share a your project description with goals, scale, constraints, and team context."
+    )
+
+
+def rephrase_request_response() -> str:
+    return (
+        "Please rephrase your message as a project architecture request.\n\n"
+        "Example: We are building a fintech platform with strict compliance, high scalability, "
+        "and multiple teams. Recommend suitable architecture patterns."
+    )
+
+
 class RecommendationState(TypedDict):
     project_input: str
     parsed_requirements: str
@@ -182,6 +248,27 @@ def build_graph():
 
 def run_recommendation(project_description: str) -> dict[str, Any]:
     started = time.perf_counter()
+    user_intent = classify_user_intent(project_description)
+
+    if user_intent == "greeting":
+        elapsed_seconds = round(time.perf_counter() - started, 2)
+        return {
+            "status": "ok",
+            "recommendations_markdown": greeting_response(),
+            "confidence": 1.0,
+            "elapsed_seconds": elapsed_seconds,
+            "met_speed_target": elapsed_seconds <= SPEED_TARGET_SECONDS,
+        }
+
+    if user_intent != "recommendation":
+        elapsed_seconds = round(time.perf_counter() - started, 2)
+        return {
+            "status": "needs_clarification",
+            "question": rephrase_request_response(),
+            "confidence": 0.0,
+            "elapsed_seconds": elapsed_seconds,
+            "met_speed_target": elapsed_seconds <= SPEED_TARGET_SECONDS,
+        }
 
     # Create llm for OpenAI
     llm = ChatOpenAI(
