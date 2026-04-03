@@ -1,0 +1,252 @@
+[
+  {
+    "name": "Layered (N-Tier) Architecture",
+    "summary": "Separates system concerns into presentation, business, and data access layers.",
+    "best_for": "Enterprise CRUD systems with clear separation of concerns and stable domain rules.",
+    "tradeoffs": "Can become rigid and chatty across layers; performance may degrade with deep call chains.",
+    "scalability": "Medium",
+    "team_size": "Small to large",
+    "constraints": "Works best with well-defined boundaries and disciplined dependency direction.",
+    "anti_patterns": "Avoid for ultra-low latency systems requiring tight data-to-UI paths."
+  },
+  {
+    "name": "Microservices Architecture",
+    "summary": "Builds an application as independently deployable services aligned to business capabilities.",
+    "best_for": "Large, evolving products with multiple teams needing autonomous delivery.",
+    "tradeoffs": "Operational complexity, distributed debugging, and higher platform overhead.",
+    "scalability": "High",
+    "team_size": "Medium to large",
+    "constraints": "Needs strong DevOps, observability, API governance, and service ownership.",
+    "anti_patterns": "Avoid for small teams or early products without platform maturity."
+  },
+  {
+    "name": "Modular Monolith",
+    "summary": "Single deployable unit organized into strict internal modules with clear interfaces.",
+    "best_for": "Startups or mid-size teams needing fast delivery without distributed-system overhead.",
+    "tradeoffs": "Requires discipline to prevent module coupling; eventual split can be hard if boundaries are weak.",
+    "scalability": "Medium to high",
+    "team_size": "Small to medium",
+    "constraints": "Enforce module boundaries in code and ownership conventions.",
+    "anti_patterns": "Avoid when teams are fully independent and require isolated release cycles."
+  },
+  {
+    "name": "Event-Driven Architecture",
+    "summary": "Components communicate via events using brokers or streams for loose coupling.",
+    "best_for": "Real-time workflows, integrations, and systems that react to business events.",
+    "tradeoffs": "Event ordering, replay, and eventual consistency increase complexity.",
+    "scalability": "High",
+    "team_size": "Medium to large",
+    "constraints": "Requires schema governance, idempotency, and robust monitoring.",
+    "anti_patterns": "Avoid when strict synchronous consistency is mandatory everywhere."
+  },
+  {
+    "name": "CQRS",
+    "summary": "Separates read and write models to optimize each path independently.",
+    "best_for": "Domains with complex writes and high-volume, query-heavy read traffic.",
+    "tradeoffs": "Higher complexity, data duplication, and consistency lag between models.",
+    "scalability": "High",
+    "team_size": "Medium to large",
+    "constraints": "Needs careful command validation and read-model projection strategy.",
+    "anti_patterns": "Avoid for simple CRUD workloads with modest scale."
+  },
+  {
+    "name": "Event Sourcing",
+    "summary": "Persists state changes as an immutable sequence of domain events.",
+    "best_for": "Audit-heavy domains requiring traceability and historical reconstruction.",
+    "tradeoffs": "Complex debugging, migration burden, and projection management.",
+    "scalability": "High",
+    "team_size": "Medium to large",
+    "constraints": "Requires versioned events, replay strategy, and snapshotting plan.",
+    "anti_patterns": "Avoid when full audit history is not a strong business need."
+  },
+  {
+    "name": "Serverless Architecture",
+    "summary": "Runs business logic on managed functions and services with auto-scaling.",
+    "best_for": "Spiky workloads, rapid experimentation, and event-triggered tasks.",
+    "tradeoffs": "Cold starts, vendor lock-in, and local debugging challenges.",
+    "scalability": "High",
+    "team_size": "Small to medium",
+    "constraints": "Design around stateless functions, managed services, and cloud limits.",
+    "anti_patterns": "Avoid for long-running, compute-heavy, or strict low-latency workloads."
+  },
+  {
+    "name": "Hexagonal (Ports and Adapters)",
+    "summary": "Centers business logic and isolates external systems through ports and adapters.",
+    "best_for": "Domain-centric systems needing testability and flexibility in infrastructure choices.",
+    "tradeoffs": "Initial setup feels abstract and may slow inexperienced teams.",
+    "scalability": "Medium to high",
+    "team_size": "Small to medium",
+    "constraints": "Requires clear port contracts and disciplined dependency inversion.",
+    "anti_patterns": "Avoid for short-lived prototypes where design overhead is not justified."
+  },
+  {
+    "name": "Clean Architecture",
+    "summary": "Organizes code in concentric layers with dependencies pointing inward to core rules.",
+    "best_for": "Long-lived applications prioritizing maintainability, testing, and framework independence.",
+    "tradeoffs": "More boilerplate and abstraction compared to direct framework-driven approaches.",
+    "scalability": "Medium",
+    "team_size": "Small to large",
+    "constraints": "Strong code review discipline is needed to protect dependency rules.",
+    "anti_patterns": "Avoid for throwaway demos with minimal lifecycle expectations."
+  },
+  {
+    "name": "Domain-Driven Design (DDD) Bounded Contexts",
+    "summary": "Structures systems around domain language and distinct bounded contexts.",
+    "best_for": "Complex business domains with many subdomains and evolving rules.",
+    "tradeoffs": "Discovery cost is high; poor facilitation leads to overengineering.",
+    "scalability": "High",
+    "team_size": "Medium to large",
+    "constraints": "Needs domain experts and deliberate context mapping.",
+    "anti_patterns": "Avoid for simple transactional systems with limited domain complexity."
+  },
+  {
+    "name": "Service-Oriented Architecture (SOA)",
+    "summary": "Integrates enterprise capabilities via reusable services and contracts.",
+    "best_for": "Large enterprises integrating heterogeneous legacy and vendor systems.",
+    "tradeoffs": "Governance-heavy and slower change cycles if central coordination is strict.",
+    "scalability": "Medium to high",
+    "team_size": "Large",
+    "constraints": "Requires mature contract governance and enterprise integration standards.",
+    "anti_patterns": "Avoid for small greenfield products where simpler approaches suffice."
+  },
+  {
+    "name": "Client-Server Architecture",
+    "summary": "Separates clients consuming services from centralized backend servers.",
+    "best_for": "Traditional web and desktop systems with centralized control.",
+    "tradeoffs": "Server bottlenecks can appear without proper horizontal scaling.",
+    "scalability": "Medium",
+    "team_size": "Small to medium",
+    "constraints": "Needs robust session, caching, and load-balancing strategy.",
+    "anti_patterns": "Avoid for offline-first products requiring strong local autonomy."
+  },
+  {
+    "name": "Peer-to-Peer (P2P) Architecture",
+    "summary": "Distributes roles among nodes that can act as both clients and servers.",
+    "best_for": "Decentralized file sharing, collaboration, and resilient distributed workloads.",
+    "tradeoffs": "Security, trust, and coordination are harder than centralized designs.",
+    "scalability": "High",
+    "team_size": "Medium to large",
+    "constraints": "Requires robust peer discovery, trust model, and fault tolerance.",
+    "anti_patterns": "Avoid when strict central governance and compliance controls are required."
+  },
+  {
+    "name": "Pipeline Architecture",
+    "summary": "Processes data through ordered stages where each step transforms input for the next.",
+    "best_for": "ETL, media processing, and document transformation workflows.",
+    "tradeoffs": "Backpressure handling and stage imbalance can reduce throughput.",
+    "scalability": "High",
+    "team_size": "Small to medium",
+    "constraints": "Needs clear contracts between stages and retry semantics.",
+    "anti_patterns": "Avoid for highly interactive request-response applications."
+  },
+  {
+    "name": "Space-Based Architecture",
+    "summary": "Uses distributed in-memory data grids to remove central database bottlenecks.",
+    "best_for": "High-throughput, low-latency systems with bursty traffic.",
+    "tradeoffs": "Operational complexity and data consistency strategy are non-trivial.",
+    "scalability": "High",
+    "team_size": "Large",
+    "constraints": "Requires expertise in partitioning, replication, and failure recovery.",
+    "anti_patterns": "Avoid for standard enterprise apps with moderate load."
+  },
+  {
+    "name": "Master-Slave Architecture",
+    "summary": "Coordinates work through one controller node and replicated worker nodes.",
+    "best_for": "Read-heavy systems, batch control, and replicated processing tasks.",
+    "tradeoffs": "Single point of coordination risk unless failover is strong.",
+    "scalability": "Medium to high",
+    "team_size": "Small to medium",
+    "constraints": "Needs clear failover and replication lag management.",
+    "anti_patterns": "Avoid for fully decentralized requirements."
+  },
+  {
+    "name": "Broker Architecture",
+    "summary": "Uses a broker to mediate communication and routing between distributed components.",
+    "best_for": "Integration-heavy systems where producers and consumers evolve independently.",
+    "tradeoffs": "Broker can become bottleneck or central failure domain if underprovisioned.",
+    "scalability": "High",
+    "team_size": "Medium to large",
+    "constraints": "Requires queue/topic governance, dead-letter strategy, and monitoring.",
+    "anti_patterns": "Avoid for simple direct service interactions."
+  },
+  {
+    "name": "Blackboard Architecture",
+    "summary": "Multiple specialized components collaborate by reading/writing to a shared knowledge base.",
+    "best_for": "Complex problem-solving systems like signal interpretation or AI planning.",
+    "tradeoffs": "Coordination logic is hard and performance can degrade with contention.",
+    "scalability": "Medium",
+    "team_size": "Medium",
+    "constraints": "Needs strong conflict resolution and contribution arbitration rules.",
+    "anti_patterns": "Avoid for transactional business apps with straightforward flows."
+  },
+  {
+    "name": "Microkernel (Plug-in) Architecture",
+    "summary": "Provides a minimal core with optional plug-in modules for extensibility.",
+    "best_for": "Products requiring customizable features and plugin ecosystems.",
+    "tradeoffs": "Plugin contracts and version compatibility create long-term maintenance overhead.",
+    "scalability": "Medium",
+    "team_size": "Small to medium",
+    "constraints": "Requires stable extension APIs and strict plugin isolation.",
+    "anti_patterns": "Avoid when product scope is fixed and extension is unnecessary."
+  },
+  {
+    "name": "Strangler Fig Pattern",
+    "summary": "Incrementally replaces legacy functionality by routing traffic to new components over time.",
+    "best_for": "Legacy modernization with low-risk, phased migration needs.",
+    "tradeoffs": "Dual-run complexity and temporary integration overhead are significant.",
+    "scalability": "Medium to high",
+    "team_size": "Medium to large",
+    "constraints": "Needs clear migration roadmap, traffic routing, and parity testing.",
+    "anti_patterns": "Avoid when full rewrite is cheap and low risk."
+  },
+  {
+    "name": "Backend for Frontend (BFF)",
+    "summary": "Creates dedicated backend services tailored to each frontend channel.",
+    "best_for": "Products with distinct web/mobile clients needing optimized APIs.",
+    "tradeoffs": "Can duplicate logic across BFFs without shared domain services.",
+    "scalability": "Medium to high",
+    "team_size": "Medium",
+    "constraints": "Needs clear ownership split between channel logic and core services.",
+    "anti_patterns": "Avoid when one generic API serves all clients well."
+  },
+  {
+    "name": "API Gateway Pattern",
+    "summary": "Central entry point handling routing, auth, throttling, and cross-cutting concerns.",
+    "best_for": "Service-based backends needing unified external API management.",
+    "tradeoffs": "Gateway complexity can grow and become critical dependency.",
+    "scalability": "High",
+    "team_size": "Medium to large",
+    "constraints": "Requires policy governance, observability, and resilience design.",
+    "anti_patterns": "Avoid if there are very few services and no cross-cutting needs."
+  },
+  {
+    "name": "Data Mesh",
+    "summary": "Decentralizes data ownership to domain teams with shared platform standards.",
+    "best_for": "Large organizations with many data domains and platform capabilities.",
+    "tradeoffs": "Requires significant organizational maturity and governance alignment.",
+    "scalability": "High",
+    "team_size": "Large",
+    "constraints": "Needs federated governance, self-serve platform, and data product mindset.",
+    "anti_patterns": "Avoid for small teams with one central data platform."
+  },
+  {
+    "name": "Lakehouse Architecture",
+    "summary": "Combines data lake flexibility with warehouse-like management and analytics.",
+    "best_for": "Analytics and ML workloads requiring unified storage for varied data types.",
+    "tradeoffs": "Tooling selection and table-format governance can be complex.",
+    "scalability": "High",
+    "team_size": "Medium to large",
+    "constraints": "Requires metadata management, data quality controls, and cost governance.",
+    "anti_patterns": "Avoid for applications with minimal reporting and no ML roadmap."
+  },
+  {
+    "name": "Offline-First Architecture",
+    "summary": "Prioritizes local-first UX with sync mechanisms for intermittent connectivity.",
+    "best_for": "Mobile or field applications used in low-connectivity environments.",
+    "tradeoffs": "Conflict resolution and sync reconciliation add substantial complexity.",
+    "scalability": "Medium",
+    "team_size": "Small to medium",
+    "constraints": "Needs robust local storage model and deterministic sync rules.",
+    "anti_patterns": "Avoid when users are always online and consistency is immediate."
+  }
+]

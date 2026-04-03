@@ -1,0 +1,48 @@
+E-commerce at scale:
+We are building an e-commerce platform expected to handle 2 million monthly users, 
+with frequent catalog updates, flash sales, and separate teams for checkout, inventory, 
+and recommendations. We need high scalability, fault isolation, and fast feature releases.
+
+Early-stage SaaS MVP:
+We are a 5-person startup building a B2B SaaS app for invoice management. 
+We need to ship in 8 weeks with limited DevOps capacity and prefer simple operations 
+while keeping the system maintainable for future growth.
+
+Banking modernization:
+A bank wants to modernize a 15-year-old monolithic loan processing system without downtime. 
+We need phased migration, strict auditability, regulatory compliance, 
+and integration with legacy core banking services.
+
+Real-time IoT monitoring:
+We need a platform to ingest telemetry from 500,000 IoT devices in near real time, 
+trigger alerts within seconds, and support analytics dashboards. 
+System must be resilient during traffic spikes and partial outages.
+
+Field app with weak internet:
+We are building a mobile app for field technicians in rural areas with unreliable 
+connectivity. The app must work offline, sync changes later, 
+and resolve data conflicts safely.
+
+Media processing pipeline:
+We need to process user-uploaded videos through multiple stages: 
+virus scan, transcode, thumbnail extraction, metadata enrichment, and publish. 
+Throughput is more important than immediate response time.
+
+Enterprise data platform:
+A large enterprise with multiple domains (sales, finance, supply chain) 
+wants decentralized data ownership while enabling self-service analytics and 
+governance standards across teams.
+
+Ambiguous brief (for clarification path test):
+We are building a new digital platform for our business and need an 
+architecture recommendation that is scalable and modern.
+
+Low-latency trading support tool:
+We need a decision-support backend for internal trading ops with strict low latency, 
+high availability, and full traceability of decisions. 
+Team is medium-sized and experienced with distributed systems.
+
+Government citizen services portal:
+We are launching a citizen services portal with seasonal traffic spikes, 
+strong security requirements, and integrations with multiple legacy departmental systems. 
+We need stable operations and clear governance.
