@@ -16,24 +16,18 @@ RANK_AND_RECOMMEND_PROMPT = """You are an architecture recommendation assistant.
 Given the parsed requirements and retrieved architecture pattern context:
 1) Select the best 3 patterns from retrieved context only.
 2) Rank them in order (best first).
-3) Provide output in valid JSON with this exact shape:
-{
-  "confidence": 0.0,
-  "recommendations": [
-    {
-      "pattern": "string",
-      "why_it_fits": "string",
-      "tradeoffs": "string",
-      "when_not_to_use": "string",
-      "confidence": 0.0
-    }
-  ]
-}
+3) Provide output in markdown only.
 
 Rules:
-- confidence must be a number from 0.0 to 1.0.
-- recommendations must contain exactly 3 items.
-- recommendation confidence must be a number from 0.0 to 1.0.
+- Return exactly 3 ranked sections with this structure:
+  ## 1. Pattern: <name>
+  - Why it fits: <text>
+  - Tradeoffs: <text>
+  - When not to use: <text>
+  - Confidence: <0.0 to 1.0>
+- Repeat for 2 and 3.
+- At the end, add one line:
+  Overall Confidence: <0.0 to 1.0>
 - Do not invent pattern names that are not in the retrieved context.
 """
 

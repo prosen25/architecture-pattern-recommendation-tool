@@ -1,8 +1,4 @@
-﻿from __future__ import annotations
-
-from collections.abc import Iterator
-
-import streamlit as st
+﻿import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage
 
 from main import run_recommendation
@@ -37,11 +33,6 @@ def render_assistant_response(result: dict) -> str:
     return f"{header}\n\n{recommendations}"
 
 
-def stream_text(text: str) -> Iterator[str]:
-    for part in text.split(" "):
-        yield part + " "
-
-
 with st.sidebar:
     st.subheader("Controls")
     if st.button("Clear Conversation", use_container_width=True):
@@ -67,11 +58,18 @@ if project_description:
     with st.chat_message("assistant"):
         with st.spinner("Analyzing and recommending architecture patterns..."):
             try:
-                result = run_recommendation(project_description)
-                assistant_text = render_assistant_response(result)
-                streamed_text = st.write_stream(stream_text(assistant_text))
+                live_buffer = {"text": ""}
+                streaming_box = st.empty()
 
-                st.session_state.lc_messages.append(AIMessage(content=streamed_text))
+                def on_token(token: str) -> None:
+                    live_buffer["text"] += token
+                    streaming_box.markdown(live_buffer["text"])
+
+                result = run_recommendation(project_description, token_callback=on_token)
+                assistant_text = render_assistant_response(result)
+                streaming_box.markdown(assistant_text)
+
+                st.session_state.lc_messages.append(AIMessage(content=assistant_text))
                 st.session_state.interaction_log.append(
                     {
                         "project_description": project_description,

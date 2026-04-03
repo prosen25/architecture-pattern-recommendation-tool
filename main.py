@@ -1,9 +1,8 @@
-import json
 import os
 import re
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 import httpx
 from dotenv import load_dotenv
@@ -122,46 +121,30 @@ class RecommendationState(TypedDict):
     needs_clarification: bool
     clarifying_question: str
     ranked_recommendations: list[dict[str, Any]]
+    token_callback: Callable[[str], None]
     llm: Any
     retriever: Any
 
 
-def extract_json(text: str) -> dict[str, Any]:
-    cleaned = text.strip()
-    try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError:
-        pass
+def extract_confidence_and_markdown(text: str) -> tuple[float, str]:
+    overall_match = re.search(r"Overall Confidence:\s*([01](?:\.\d+)?)", text, flags=re.IGNORECASE)
+    if overall_match:
+        confidence = float(overall_match.group(1))
+        markdown = re.sub(
+            r"\n*Overall Confidence:\s*[01](?:\.\d+)?\s*$",
+            "",
+            text.strip(),
+            flags=re.IGNORECASE,
+        ).strip()
+        return max(0.0, min(1.0, confidence)), markdown
 
-    match = re.search(r"\{[\s\S]*\}", cleaned)
-    if not match:
-        raise ValueError("Model response did not include a JSON object.")
+    confidence_values = re.findall(r"-\s*Confidence:\s*([01](?:\.\d+)?)", text, flags=re.IGNORECASE)
+    if confidence_values:
+        nums = [float(value) for value in confidence_values[:3]]
+        avg = sum(nums) / len(nums)
+        return max(0.0, min(1.0, avg)), text.strip()
 
-    return json.loads(match.group(0))
-
-
-def format_recommendations_markdown(recommendations: list[dict[str, Any]]) -> str:
-    blocks: list[str] = []
-    for index, item in enumerate(recommendations[:3], start=1):
-        pattern = str(item.get("pattern", "Unknown Pattern")).strip()
-        why_it_fits = str(item.get("why_it_fits", "Not provided")).strip()
-        tradeoffs = str(item.get("tradeoffs", "Not provided")).strip()
-        when_not_to_use = str(item.get("when_not_to_use", "Not provided")).strip()
-        confidence = float(item.get("confidence", 0.0))
-
-        blocks.append(
-            "\n".join(
-                [
-                    f"## {index}. Pattern: {pattern}",
-                    f"- Why it fits: {why_it_fits}",
-                    f"- Tradeoffs: {tradeoffs}",
-                    f"- When not to use: {when_not_to_use}",
-                    f"- Confidence: {max(0.0, min(1.0, confidence)):.2f}",
-                ]
-            )
-        )
-
-    return "\n\n".join(blocks)
+    return 0.0, text.strip()
 
 
 def parse_requirements_node(state: RecommendationState) -> RecommendationState:
@@ -182,6 +165,7 @@ def retrieve_patterns_node(state: RecommendationState) -> RecommendationState:
 
 def reason_and_rank_node(state: RecommendationState) -> RecommendationState:
     llm = state["llm"]
+    token_callback = state.get("token_callback")
 
     documents = []
     for idx, doc in enumerate(state["retrieved_docs"], start=1):
@@ -194,19 +178,21 @@ def reason_and_rank_node(state: RecommendationState) -> RecommendationState:
         f"Retrieved Context:\n{context}"
     )
 
-    response_text = llm.invoke(prompt).content.strip()
-    payload = extract_json(response_text)
-
-    confidence = float(payload.get("confidence", 0.0))
-    recommendations = payload.get("recommendations", [])
-    if not isinstance(recommendations, list):
-        recommendations = []
-    recommendations = recommendations[:3]
-    recommendations_md = format_recommendations_markdown(recommendations)
+    if token_callback:
+        chunks: list[str] = []
+        for chunk in llm.stream(prompt):
+            piece = chunk.content or ""
+            if piece:
+                chunks.append(piece)
+                token_callback(piece)
+        response_text = "".join(chunks).strip()
+    else:
+        response_text = llm.invoke(prompt).content.strip()
+    confidence, recommendations_md = extract_confidence_and_markdown(response_text)
 
     return {
         "confidence": max(0.0, min(1.0, confidence)),
-        "ranked_recommendations": recommendations,
+        "ranked_recommendations": [],
         "recommendations_md": recommendations_md,
     }
 
@@ -246,7 +232,10 @@ def build_graph():
     return graph_builder.compile()
 
 
-def run_recommendation(project_description: str) -> dict[str, Any]:
+def run_recommendation(
+    project_description: str,
+    token_callback: Callable[[str], None] | None = None,
+) -> dict[str, Any]:
     started = time.perf_counter()
     user_intent = classify_user_intent(project_description)
 
@@ -299,6 +288,7 @@ def run_recommendation(project_description: str) -> dict[str, Any]:
             "project_input": project_description,
             "llm": llm,
             "retriever": retriever,
+            "token_callback": token_callback,
         }
     )
 
@@ -324,8 +314,6 @@ def run_recommendation(project_description: str) -> dict[str, Any]:
     }
 
 def print_result(result: dict[str, Any]) -> None:
-    print(f"Status: {result['status']}")
-    print(f"Confidence: {result['confidence']:.2f}")
     print(
         f"Response Time: {result['elapsed_seconds']:.2f}s "
         f"(<=10s target: {'yes' if result['met_speed_target'] else 'no'})"
